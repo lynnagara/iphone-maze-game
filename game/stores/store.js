@@ -7,21 +7,17 @@ var Constants = require('../constants/constants')
 
 var change = 'CHANGE';
 
-function Store() {
-  this.currentView = Constants.views.home;
-  this.emitter = new EventEmitter();
-};
+var _currentView = Constants.views.home;
+var _emitter = new EventEmitter();
+var _maze;
 
-Store.prototype.initialize = function() {
-
-  var _this = this;
-
+function startGame() {
   GameDispatcher.register(function(action) {
     switch (action.actionType) {
       case 'start-game':
-        _this.currentView = Constants.views.maze;
-        _this.generateMaze(3,3);
-        _this.emitter.emit(change);
+        _currentView = Constants.views.maze;
+        generateMaze(3,3);
+        _emitter.emit(change);
         break;
       default:
         // nothing
@@ -29,31 +25,25 @@ Store.prototype.initialize = function() {
   });
 }
 
-Store.prototype.getCurrentView = function() {
-  return this.currentView;
+function generateMaze(width, height) {
+  _maze = MazeGenerator.generateMaze(width, height);
 }
 
-Store.prototype.addChangeListener = function(callback) {
-  this.emitter.addListener(change, callback);  
+function getMaze() {
+  return _maze;
 }
 
-// Take the required height and widgth of the maze
-// Return a 2d matrix of the border properties of every position on the grid
-// maze[0][0] = {top: true, bottom: true, left: true, right: false}
-//
-// [
-//   [{..}, {..}],
-//   [{..}, {..}],
-// ]
-//
-// Start in a random position
-
-Store.prototype.generateMaze = function(width, height) {
-  MazeGenerator.generateMaze(width, height);
+function getCurrentView() {
+  return _currentView;
 }
 
+function addChangeListener(callback) {
+  _emitter.addListener(change, callback);
+}
 
-
-var store = new Store();
-
-module.exports = store;
+module.exports = {
+  getCurrentView: getCurrentView,
+  getMaze: getMaze,
+  addChangeListener: addChangeListener,
+  startGame: startGame
+};

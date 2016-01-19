@@ -1,9 +1,11 @@
 var React = require('react-native');
 var HomeScreen = require('./components/home');
 var Maze = require('./components/maze');
-var store = require('./stores/store');
+var Constants = require('./constants/constants');
 
-store.initialize();
+var Store = require('./stores/store');
+
+Store.startGame();
 
 var {
   AppRegistry,
@@ -13,12 +15,12 @@ var {
 
 var MoveGame = React.createClass({
   getInitialState: function() {
-    return {page: 'HOME'};
+    return {page: Constants.views.home};
   },
   render: function() {
     var currentPage;
     switch(this.state.page) {
-      case 'MAZE':
+      case Constants.views.maze:
         currentPage = <Maze />
         break;
       default:
@@ -32,11 +34,10 @@ var MoveGame = React.createClass({
     );
   },
   componentDidMount: function() {
-    store.addChangeListener(this.startGame);
+    Store.addChangeListener(this.startGame);
   },
   startGame: function() {
-    console.log(store.getCurrentView())
-    this.setState({page: store.getCurrentView()});
+    this.setState({page: Store.getCurrentView()});
   }
 });
 

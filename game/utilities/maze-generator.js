@@ -16,18 +16,18 @@
 // where true indicates the presence of a border in that direction
 // and false means no border in that direction
 
-var MAZE;
+var MAZE = {};
 
 function generateMaze(width, height) {
 
   var tileCount = width * height;
 
   // First, create the MAZE array with a placeholder object inside
-  MAZE = [];
+  MAZE.tiles = [];
 
   for (var i = 0; i < width; i++) {
     var row = [];
-    MAZE.push(row);
+    MAZE.tiles.push(row);
     for (var j = 0; j < height; j++) {
       row.push(getEmptyTileObj(i, j));
     }
@@ -36,10 +36,12 @@ function generateMaze(width, height) {
   // Start at any random position
   var prevTile;
   var currentTile = [getRandomInt(width), getRandomInt(height)];
+  MAZE.initial = currentTile;
   var visitedTiles = 1;
   var currentPath = [currentTile];
   markVisited(currentTile);
-
+  // temporary
+  MAZE.tiles[currentTile[0]][currentTile[1]].order = 0;
 
   // Loop until all tiles are visited
   while (visitedTiles < tileCount) {
@@ -66,36 +68,40 @@ function generateMaze(width, height) {
 // Updates maze walls
 function updateMazeWalls (currentTile, prevTile) {
   var direction = `${currentTile[0]-prevTile[0]},${currentTile[1]-prevTile[1]}`;
-  var prevTileObj = MAZE[prevTile[0]][prevTile[1]];
-  var currentTileObj = MAZE[currentTile[0]][currentTile[1]];
+  var prevTileObj = MAZE.tiles[prevTile[0]][prevTile[1]];
+  var currentTileObj = MAZE.tiles[currentTile[0]][currentTile[1]];
+
+  // temporary
+  currentTileObj.order = prevTileObj.order + 1;
+
 
   switch(direction) {
     case '-1,0':
-      // Left
-      prevTileObj.left = false;
-      currentTileObj.right = false;
-      break;
-    case '1,0':
-      // Right
-      prevTileObj.right = false;
-      currentTileObj.left = false;
-      break;
-    case '0,-1':
       // Up
       prevTileObj.top = false;
       currentTileObj.bottom = false;
       break;
-    case '0,1':
+    case '1,0':
       // Down
       prevTileObj.bottom = false;
       currentTileObj.top = false;
+      break;
+    case '0,-1':
+      // Left
+      prevTileObj.left = false;
+      currentTileObj.right = false;
+      break;
+    case '0,1':
+      // Right
+      prevTileObj.right = false;
+      currentTileObj.left = false;
       break;
     default:
   }
 }
 
 function markVisited([x,y]) {
-  MAZE[x][y].visited = true;
+  MAZE.tiles[x][y].visited = true;
 }
 
 function getEmptyTileObj(x, y) {
@@ -115,7 +121,7 @@ function getEmptyTileObj(x, y) {
 // It returns a tile [x, y] or undefined if there are none
 function getNextTile(currentTile) {
   var isValidTile = function([x, y]) {
-    if (MAZE[x] && MAZE[x][y] && MAZE[x][y].visited === false) {
+    if (MAZE.tiles[x] && MAZE.tiles[x][y] && MAZE.tiles[x][y].visited === false) {
       return true;
     }
     return false;

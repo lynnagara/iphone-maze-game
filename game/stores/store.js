@@ -3,7 +3,7 @@
 var GameDispatcher = require('../dispatchers/game-dispatcher');
 var MazeGenerator = require ('../utilities/maze-generator');
 var EventEmitter = require('EventEmitter');
-var Constants = require('../constants/constants')
+var Constants = require('../constants/constants');
 
 var change = 'CHANGE';
 
@@ -16,7 +16,7 @@ function startGame() {
     switch (action.actionType) {
       case 'start-game':
         _currentView = Constants.views.maze;
-        generateMaze(3,3);
+        generateMaze(8,8);
         _emitter.emit(change);
         break;
       default:

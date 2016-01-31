@@ -2,6 +2,9 @@
 
 var React = require('react-native');
 var Store = require('../stores/store');
+var Constants = require('../constants/constants');
+var Timer = require('./timer');
+var Ball = require('./ball');
 
 var {
   Text,
@@ -12,10 +15,17 @@ var {
 var Maze = React.createClass({
   render: function() {
     var _maze = Store.getMaze();
-
-    var mazeElement = _maze.map(function(r, i) {
+    var mazeElement = _maze.tiles.map(function(r, i) {
       var row = r.map(function(col, j) {
-        return (<View key={j} style={styles.tile}><Text>X</Text></View>)
+        var stylesArr = [styles.tile];
+
+        ['top', 'bottom', 'left', 'right'].forEach(function(direction) {
+          if (col[direction]) {
+            stylesArr.push(styles[direction])
+          }
+        });
+
+        return (<View key={j} style={stylesArr}><Text>{col.order}</Text></View>)
       });
 
       return (<View key={i} style={styles.row}>{row}</View>)
@@ -23,27 +33,40 @@ var Maze = React.createClass({
 
     return (
       <View>
-        <Text>The maze screen</Text>
         {mazeElement}
+        <Ball />
       </View>
     );
   }
+
 });
 
 var styles = StyleSheet.create({
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#D6F3FF',
+  },
   tile: {
     flex: 1,
     flexDirection: 'column',
     alignItems:'center',
     justifyContent:'center',
-    width: 30,
-    height: 30,
-    backgroundColor: '#FF0000',
+    width: Constants.sizes.tile,
+    height: Constants.sizes.tile,
+    borderColor: '#004766'
   },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#FFFF00',
+  top: {
+    borderTopWidth: 1
+  },
+  bottom: {
+    borderBottomWidth: 1
+  },
+  left: {
+    borderLeftWidth: 1
+  },
+  right: {
+    borderRightWidth: 1
   }
 });
 
